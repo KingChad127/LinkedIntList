@@ -42,7 +42,27 @@ struct linked_int_list {
     int size; // size of the list excluding the header node
 };
 
-static int node_size = sizeof(struct linked_int_list *) + sizeof(int);
+/**
+ * The size of a single node = the size of the pointer to the
+ */
+static int node_size = 2 * sizeof(struct node *) + sizeof(int);
+
+/**
+ * Create a new empty linked_int_list on the heap
+ * @return a pointer to this newly created empty linked_int_list
+ */
+struct linked_int_list *create_new_list() {
+    // create header dynamically
+    struct node *header = malloc(node_size);
+    header->prev = header;
+    header->next = header;
+    // create list dynamically
+    struct linked_int_list *result = malloc(sizeof(int) + sizeof(struct node *));
+    result->header = header;
+    result->size = 0;
+    // return the memory address of this new empty list
+    return result;
+}
 
 /**
  * Get the node at a certain position
@@ -165,6 +185,26 @@ bool remove_by_value(int value, struct linked_int_list *list) {
     }
 }
 
+/**
+ * Return a sublist of elements in this list from start inclusive to stop exclusive. This list is
+ * not changed as a result of this call.
+ * @param start index of the first element of the sublist
+ * @param stop index of the last element of the sublist
+ * @param list the list from which to create the sublist
+ * @return a list with stop - start elements. The elements are from positions start inclusive to
+ * stop exclusive in this list. If stop == start, the returned list is empty
+ */
+struct linked_int_list *get_sub_list(int start, int stop, struct linked_int_list *list) {
+    struct linked_int_list *result = create_new_list();
+    struct node *tmp = get_node_at_pos(start, list);
+    for (int i = start; i < stop; ++i) {
+        add(tmp->value, result);
+        tmp = tmp->next;
+    }
+
+    return result;
+}
+
 
 /**
  * Print a linked list given the first node of the list
@@ -185,31 +225,21 @@ void print_list(struct linked_int_list *list) {
 }
 
 int main() {
-    /**
-     * Make the header
-     */
-    struct node header = {
-            &header,
-            &header,
-    };
 
-    /*
-     * Make the LinkedList Struct
-     */
-    struct linked_int_list list = {
-            &header,
-            0,
-    };
+    struct linked_int_list *list = create_new_list();
 
     /*
      * Populate the linked list
      */
     for (int i = 0; i < 4; ++i) {
-        add(i, &list);
+        add(i, list);
     }
     // print the list after adding
-    print_list(&list);
+    print_list(list);
 
-    insert(6, 2, &list);
-    print_list(&list);
+    insert(6, 2, list);
+    print_list(list);
+
+    struct linked_int_list *sublist = get_sub_list(1, 4, list);
+    print_list(sublist);
 }
