@@ -46,7 +46,7 @@ struct linked_int_list {
 struct node *get_node_at_pos(int position, struct linked_int_list *list) {
     // precondition checking
     if (position < 0 || position >= list->size) {
-        printf("Invalid list position");
+        printf("Invalid position");
         return NULL;
     }
     struct node *tmp = list->header;
@@ -71,7 +71,18 @@ void add(int value, struct linked_int_list *list) {
     list->header->prev = n;
 }
 
-void insert(int value, int position, struct linked_int_list *list) {
+void insert(int value, int pos, struct linked_int_list *list) {
+    if (pos < 0 || pos > list->size) {
+        printf("Invalid position");
+        return;
+    }
+    struct node *prev = get_node_at_pos(pos - 1, list);
+    struct node *next = prev->next;
+    struct node insert_node = {
+            prev,
+            next,
+            value,
+    };
 
 }
 
