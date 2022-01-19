@@ -1,5 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+// Note: C is pass by value. If I pass the actual struct into the below methods, the C compiler
+// will make a copy of that struct and proceed to modify it. I want to modify the original, thus,
+// I pass the pointer to that object so that the C compiler copies the pointer and not the struct.
+
 
 /**
  * list node struct
@@ -99,6 +105,66 @@ int set(int pos, int value, struct linked_int_list *list) {
     node_to_change->value = value;
     return old_value;
 }
+
+/**
+ * Return the value at the given index
+ * @param pos return the value at this index
+ * @param list list to look through
+ * @return the value at pos index
+ */
+int get(int pos, struct linked_int_list *list) {
+    struct node *n = get_node_at_pos(pos, list);
+    return n->value;
+}
+
+/**
+ * Remove the node passed in from the list
+ * @param node_to_remove tgt
+ * @param list to remove from
+ * @return the value contained in the node removed
+ */
+int remove_node(struct node *node_to_remove, struct linked_int_list *list) {
+    int ret_val = node_to_remove->value;
+    struct node *prev = node_to_remove->prev;
+    struct node *next = node_to_remove->next;
+    set_next(prev, next);
+    set_prev(next, prev);
+    free(node_to_remove);
+    return ret_val;
+}
+
+/**
+ * Remove an element from the list based on position
+ * @param pos position to remove from
+ * @param list to remove from
+ * @return the value removed
+ */
+int remove_at_pos(int pos, struct linked_int_list *list) {
+    struct node *node_to_remove = get_node_at_pos(pos, list);
+    int ret_val = remove_node(node_to_remove, list);
+    list->size--;
+    return ret_val;
+}
+
+/**
+ * Remove the leftmost occurence of value from the list
+ * @param value to remove
+ * @param list to remove from
+ * @return true if the list was changed as a result of this function
+ */
+bool remove_by_value(int value, struct linked_int_list *list) {
+    bool removed = false;
+    struct node *tmp = list->header;
+    while (tmp != NULL && !removed) {
+        if (tmp->value == value) {
+            removed = true;
+            remove_node(tmp, list);
+        } else {
+            tmp = tmp->next;
+        }
+    }
+}
+
 
 /**
  * Print a linked list given the first node of the list
