@@ -46,11 +46,6 @@ static int node_size = sizeof(struct linked_int_list *) + sizeof(int);
  * @return a pointer to the node that was requested
  */
 struct node *get_node_at_pos(int position, struct linked_int_list *list) {
-    // precondition checking
-    if (position < 0 || position >= list->size) {
-        printf("Invalid position");
-        return NULL;
-    }
     struct node *tmp = list->header;
     for (int i = -1; i < position; ++i) {
         tmp = tmp->next;
@@ -80,10 +75,6 @@ void add(int value, struct linked_int_list *list) {
  * @param list list to insert into
  */
 void insert(int value, int pos, struct linked_int_list *list) {
-    if (pos < 0 || pos > list->size) {
-        printf("Invalid position");
-        return;
-    }
     list->size++;
     struct node *prev = get_node_at_pos(pos - 1, list);
     struct node *next = prev->next;
@@ -95,6 +86,19 @@ void insert(int value, int pos, struct linked_int_list *list) {
     set_prev(next, insert_node);
 }
 
+/**
+ * Change the value at a certain position without changing the size of the list
+ * @param pos of the node to modify
+ * @param value new value to replace the old value with
+ * @param list list to modify
+ * @return the value that was replaced
+ */
+int set(int pos, int value, struct linked_int_list *list) {
+    struct node *node_to_change = get_node_at_pos(pos, list);
+    int old_value = node_to_change->value;
+    node_to_change->value = value;
+    return old_value;
+}
 
 /**
  * Print a linked list given the first node of the list
