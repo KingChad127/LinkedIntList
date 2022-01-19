@@ -11,6 +11,24 @@ struct node {
 };
 
 /**
+ * Set the next node
+ * @param curr pointer to the node to modify
+ * @param next pointer to the node to set as next
+ */
+void set_next(struct node *curr, struct node *next) {
+    curr->next = next;
+}
+
+/**
+ * Set the previous node
+ * @param curr pointer to the node to modify
+ * @param prev pointer to the node to set as prev
+ */
+void set_prev(struct node *curr, struct node *prev) {
+    curr->prev = prev;
+}
+
+/**
  * linked_int_list struct
  */
 struct linked_int_list {
