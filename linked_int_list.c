@@ -36,10 +36,12 @@ struct linked_int_list {
     int size; // size of the list excluding the header node
 };
 
+static int node_size = sizeof(struct linked_int_list *) + sizeof(int);
+
 /**
  * Get the node at a certain position
  * O(N) runtime
- * @param position the position of the node pointer to return  
+ * @param position the position of the node pointer to return
  * @param list the list to traverse through
  * @return a pointer to the node that was requested
  */
@@ -50,7 +52,7 @@ struct node *get_node_at_pos(int position, struct linked_int_list *list) {
         return NULL;
     }
     struct node *tmp = list->header;
-    for (int i = 0; i <= position; ++i) {
+    for (int i = -1; i < position; ++i) {
         tmp = tmp->next;
     }
     return tmp;
@@ -63,7 +65,7 @@ struct node *get_node_at_pos(int position, struct linked_int_list *list) {
  */
 void add(int value, struct linked_int_list *list) {
     list->size++;
-    struct node *n = malloc(sizeof(list->header) + sizeof(list->size));
+    struct node *n = malloc(node_size);
     n->value = value;
     n->prev = list->header->prev;
     n->next = list->header;
@@ -71,19 +73,26 @@ void add(int value, struct linked_int_list *list) {
     list->header->prev = n;
 }
 
+/**
+ * Insert a new value at a specific index
+ * @param value to insert
+ * @param pos position to insert at
+ * @param list list to insert into
+ */
 void insert(int value, int pos, struct linked_int_list *list) {
     if (pos < 0 || pos > list->size) {
         printf("Invalid position");
         return;
     }
+    list->size++;
     struct node *prev = get_node_at_pos(pos - 1, list);
     struct node *next = prev->next;
-    struct node insert_node = {
-            prev,
-            next,
-            value,
-    };
-
+    struct node *insert_node = malloc(node_size);
+    set_prev(insert_node, prev);
+    set_next(insert_node, next);
+    insert_node->value = value;
+    set_next(prev, insert_node);
+    set_prev(next, insert_node);
 }
 
 
@@ -102,7 +111,7 @@ void print_list(struct linked_int_list *list) {
         i++;
         tmp = tmp->next;
     }
-    printf("]");
+    printf("]\n");
 }
 
 int main() {
@@ -125,13 +134,12 @@ int main() {
     /*
      * Populate the linked list
      */
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 4; ++i) {
         add(i, &list);
     }
     // print the list after adding
     print_list(&list);
-    // access every item in the list
-    for (int i = 0; i < list.size; ++i) {
-        printf("List Item %d: %d\n", i, get_node_at_pos(i, &list)->value);
-    }
+
+    insert(6, 2, &list);
+    print_list(&list);
 }
