@@ -144,6 +144,7 @@ int get(int pos, struct linked_int_list *list) {
  * @return the value contained in the node removed
  */
 int remove_node(struct node *node_to_remove, struct linked_int_list *list) {
+    list->size--;
     int ret_val = node_to_remove->value;
     struct node *prev = node_to_remove->prev;
     struct node *next = node_to_remove->next;
@@ -162,7 +163,6 @@ int remove_node(struct node *node_to_remove, struct linked_int_list *list) {
 int remove_at_pos(int pos, struct linked_int_list *list) {
     struct node *node_to_remove = get_node_at_pos(pos, list);
     int ret_val = remove_node(node_to_remove, list);
-    list->size--;
     return ret_val;
 }
 
@@ -204,6 +204,16 @@ int index_of(int value, struct linked_int_list *list) {
     return index_pos(value, 0, list);
 }
 
+void make_empty(struct linked_int_list *list) {
+    struct node *remove = list->header->next;
+    struct node *next = remove->next;
+    int size = list->size;
+    for (int i = 0; i < size; ++i) {
+        remove_node(remove, list);
+        remove = next;
+        next = next->next;
+    }
+}
 
 
 /**
@@ -248,21 +258,20 @@ void print_list(struct linked_int_list *list) {
 }
 
 int main() {
-
-    struct linked_int_list *list = create_new_list();
-
     /*
      * Populate the linked list
      */
-    for (int i = 0; i < 4; ++i) {
-        add(i, list);
+    for (int i = 0; i < 700000; ++i) {
+        struct linked_int_list *l = create_new_list();
+        for (int j = 0; j < 1000; ++j) {
+            add(i, l);
+        }
+        printf("finished list: ");
+        print_list(l);
+        make_empty(l);
+        printf("empty list: ");
+        print_list(l);
     }
-    // print the list after adding
-    print_list(list);
 
-    insert(6, 2, list);
-    print_list(list);
-
-    struct linked_int_list *sublist = get_sub_list(1, 4, list);
-    print_list(sublist);
+    return EXIT_SUCCESS;
 }
