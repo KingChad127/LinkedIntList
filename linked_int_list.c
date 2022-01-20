@@ -184,7 +184,13 @@ bool remove_by_value(int value, struct linked_int_list *list) {
         }
     }
 }
-
+/**
+ * Return the index of the left most occurrence of a value from the list after a certain position
+ * @param value to remove
+ * @param pos position to start looking from
+ * @param list to look through
+ * @return the index of the value that was found, or -1 if value is not in the list
+ */
 int index_pos(int value, int pos, struct linked_int_list *list) {
     int not_found = -1;
     int index = pos;
@@ -200,21 +206,15 @@ int index_pos(int value, int pos, struct linked_int_list *list) {
     return not_found;
 }
 
+/**
+ * Look for a value and find its index
+ * @param value to look for
+ * @param list to remove from
+ * @return the index of the value if found, else return -1
+ */
 int index_of(int value, struct linked_int_list *list) {
     return index_pos(value, 0, list);
 }
-
-void make_empty(struct linked_int_list *list) {
-    struct node *remove = list->header->next;
-    struct node *next = remove->next;
-    int size = list->size;
-    for (int i = 0; i < size; ++i) {
-        remove_node(remove, list);
-        remove = next;
-        next = next->next;
-    }
-}
-
 
 /**
  * Return a sublist of elements in this list from start inclusive to stop exclusive. This list is
@@ -236,8 +236,30 @@ struct linked_int_list *get_sub_list(int start, int stop, struct linked_int_list
     return result;
 }
 
+/**
+ * Remove a range from the list start to stop, inclusive, exclusive
+ * @param start the first index to remove from
+ * @param stop the last index to remove (exclusive)
+ * @param list to remove from
+ */
+void remove_range(int start, int stop, struct linked_int_list *list) {
+    struct node *remove = get_node_at_pos(start, list);
+    struct node *next = remove->next;
+    int size = stop - start;
+    for (int i = 0; i < size; ++i) {
+        remove_node(remove, list);
+        remove = next;
+        next = next->next;
+    }
+}
 
-
+/**
+ * Remove every node from the list and free the memory of these unused nodes
+ * @param list to remove from
+ */
+void make_empty(struct linked_int_list *list) {
+    remove_range(0, list->size, list);
+}
 
 /**
  * Print a linked list given the first node of the list
@@ -258,20 +280,62 @@ void print_list(struct linked_int_list *list) {
 }
 
 int main() {
-    /*
-     * Populate the linked list
-     */
-    for (int i = 0; i < 700000; ++i) {
-        struct linked_int_list *l = create_new_list();
-        for (int j = 0; j < 1000; ++j) {
-            add(i, l);
-        }
-        printf("finished list: ");
-        print_list(l);
-        make_empty(l);
-        printf("empty list: ");
-        print_list(l);
+
+    int x = 6;
+    printf("size of an int x: %lu\n", sizeof(x));
+
+    struct linked_int_list *list = create_new_list();
+
+    for (int i = 0; i < 100; ++i) {
+        add(i, list);
     }
+
+    printf("list: ");
+    print_list(list);
+
+    struct node *tmp = list->header->next;
+    int nodes = 1;
+    while (tmp != list->header) {
+        tmp = tmp->next;
+        nodes++;
+    }
+    unsigned long mem_size = nodes * node_size + sizeof(int);
+    printf("Number of nodes: %d\n", nodes);
+    printf("Memory used up by the list = %lu\n", mem_size);
+
+
+    printf("remove range 20-50: ");
+    remove_range(20, 50, list);
+    print_list(list);
+
+    printf("make empty: ");
+    make_empty(list);
+    print_list(list);
+
+    tmp = list->header->next;
+    nodes = 1;
+    while (tmp != list->header) {
+        tmp = tmp->next;
+        nodes++;
+    }
+    mem_size = nodes * node_size + sizeof(int);
+    printf("Number of nodes: %d\n", nodes);
+    printf("Memory used up by the list = %lu\n", mem_size);
+
+    /*
+     * stress test
+     */
+//    for (int i = 0; i < 700000; ++i) {
+//        struct linked_int_list *l = create_new_list();
+//        for (int j = 0; j < 1000; ++j) {
+//            add(i, l);
+//        }
+//        printf("finished list: ");
+//        print_list(l);
+//        make_empty(l);
+//        printf("empty list: ");
+//        print_list(l);
+//    }
 
     return EXIT_SUCCESS;
 }
