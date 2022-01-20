@@ -21,7 +21,7 @@ struct node {
  * @param curr pointer to the node to modify
  * @param next pointer to the node to set as next
  */
-void set_next(struct node *curr, struct node *next) {
+void node_set_next(struct node *curr, struct node *next) {
     curr->next = next;
 }
 
@@ -30,7 +30,7 @@ void set_next(struct node *curr, struct node *next) {
  * @param curr pointer to the node to modify
  * @param prev pointer to the node to set as prev
  */
-void set_prev(struct node *curr, struct node *prev) {
+void node_set_prev(struct node *curr, struct node *prev) {
     curr->prev = prev;
 }
 
@@ -53,11 +53,11 @@ static int node_size = 2 * sizeof(struct node *) + sizeof(int);
  */
 struct linked_int_list *create_new_list() {
     // create header dynamically
-    struct node *header = malloc(node_size);
+    struct node *header = (struct node *) malloc(node_size);
     header->prev = header;
     header->next = header;
     // create list dynamically
-    struct linked_int_list *result = malloc(sizeof(int) + sizeof(struct node *));
+    struct linked_int_list *result = (struct linked_int_list *) malloc(sizeof(int) + sizeof(struct node *));
     result->header = header;
     result->size = 0;
     // return the memory address of this new empty list
@@ -86,7 +86,7 @@ struct node *get_node_at_pos(int position, struct linked_int_list *list) {
  */
 void add(int value, struct linked_int_list *list) {
     list->size++;
-    struct node *n = malloc(node_size);
+    struct node *n = (struct node *) malloc(node_size);
     n->value = value;
     n->prev = list->header->prev;
     n->next = list->header;
@@ -104,12 +104,12 @@ void insert(int value, int pos, struct linked_int_list *list) {
     list->size++;
     struct node *prev = get_node_at_pos(pos - 1, list);
     struct node *next = prev->next;
-    struct node *insert_node = malloc(node_size);
-    set_prev(insert_node, prev);
-    set_next(insert_node, next);
+    struct node *insert_node = (struct node *) malloc(node_size);
+    node_set_prev(insert_node, prev);
+    node_set_next(insert_node, next);
     insert_node->value = value;
-    set_next(prev, insert_node);
-    set_prev(next, insert_node);
+    node_set_next(prev, insert_node);
+    node_set_prev(next, insert_node);
 }
 
 /**
@@ -148,8 +148,8 @@ int remove_node(struct node *node_to_remove, struct linked_int_list *list) {
     int ret_val = node_to_remove->value;
     struct node *prev = node_to_remove->prev;
     struct node *next = node_to_remove->next;
-    set_next(prev, next);
-    set_prev(next, prev);
+    node_set_next(prev, next);
+    node_set_prev(next, prev);
     free(node_to_remove);
     return ret_val;
 }
