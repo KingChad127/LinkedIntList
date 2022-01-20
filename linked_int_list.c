@@ -167,15 +167,15 @@ int remove_at_pos(int pos, struct linked_int_list *list) {
 }
 
 /**
- * Remove the leftmost occurence of value from the list
+ * Remove the leftmost occurrence of value from the list
  * @param value to remove
  * @param list to remove from
  * @return true if the list was changed as a result of this function
  */
 bool remove_by_value(int value, struct linked_int_list *list) {
     bool removed = false;
-    struct node *tmp = list->header;
-    while (tmp != NULL && !removed) {
+    struct node *tmp = list->header->next;
+    while (tmp != list->header && !removed) {
         if (tmp->value == value) {
             removed = true;
             remove_node(tmp, list);
@@ -184,6 +184,27 @@ bool remove_by_value(int value, struct linked_int_list *list) {
         }
     }
 }
+
+int index_pos(int value, int pos, struct linked_int_list *list) {
+    int not_found = -1;
+    int index = pos;
+    struct node *tmp = list->header->next;
+    while (tmp != list->header) {
+        if (tmp->value == value) {
+            return index;
+        }
+        tmp = tmp->next;
+        index++;
+    }
+    // element wasn't found after iterating through the list
+    return not_found;
+}
+
+int index_of(int value, struct linked_int_list *list) {
+    return index_pos(value, 0, list);
+}
+
+
 
 /**
  * Return a sublist of elements in this list from start inclusive to stop exclusive. This list is
@@ -204,6 +225,8 @@ struct linked_int_list *get_sub_list(int start, int stop, struct linked_int_list
 
     return result;
 }
+
+
 
 
 /**
