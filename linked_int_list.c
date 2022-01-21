@@ -364,7 +364,18 @@ int main() {
     printf("expected: 0, [ ]; ");
     printf("actual: %d, ", list->size);
     print_list(list);
+    printf("\n");
 
+    // stress test: create and destroy linked list 100,000 times to ensure that there are no memory leaks
+    // after a list is destroyed, the memory used by the nodes should be freed
+    struct linked_int_list *l = create_new_list();
+    for (int i = 0; i < 100000; ++i) {
+        printf("list: %d\n", i);
+        for (int j = 0; j < 10000; ++j) {
+            linked_int_list_add(l, i);
+        }
+        linked_int_list_make_empty(l);
+    }
 
     return EXIT_SUCCESS;
 }
