@@ -368,9 +368,9 @@ int main() {
 
     // stress test: create and destroy linked list 100,000 times to ensure that there are no memory leaks
     // after a list is destroyed, the memory used by the nodes should be freed
+    printf("Stress Test\n");
     struct linked_int_list *l = create_new_list();
     for (int i = 0; i < 100000; ++i) {
-        printf("list: %d\n", i);
         for (int j = 0; j < 10000; ++j) {
             linked_int_list_add(l, i);
         }
