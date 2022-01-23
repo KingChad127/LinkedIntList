@@ -9,18 +9,32 @@
 // will make a copy of that struct and proceed to modify it. I want to modify the original, thus,
 // I pass the pointer to that object so that the C compiler copies the pointer and not the struct.
 
+///**
+// * Create a new empty linked_int_list on the heap
+// * @return a pointer to this newly created empty linked_int_list
+// */
+//struct linked_int_list *linked_int_list_create() {
+//    struct node *header = node_create(NULL, NULL);
+//    header->prev = header;
+//    header->next = header;
+//    struct linked_int_list *result = (struct linked_int_list *) malloc(sizeof(struct node *) + sizeof(int));
+//    result->header = header;
+//    result->size = 0;
+//    return result;
+//}
+
 /**
- * Create a new empty linked_int_list on the heap
- * @return a pointer to this newly created empty linked_int_list
+ * Create a new empty linked_int_list on the stack
+ * @return this newly created empty linked_int_list
  */
-struct linked_int_list *linked_int_list_create() {
+struct linked_int_list linked_int_list_create() {
     struct node *header = node_create(NULL, NULL);
     header->prev = header;
     header->next = header;
-    struct linked_int_list *result = (struct linked_int_list *) malloc(sizeof(struct node *) + sizeof(int));
-    result->header = header;
-    result->size = 0;
-    return result;
+    return (struct linked_int_list) {
+        .header = header,
+        .size = 0,
+    };
 }
 
 /**
@@ -186,11 +200,11 @@ int linked_int_list_index_of(struct linked_int_list *list, int value) {
  * @return a list with stop - start elements. The elements are from positions start inclusive to
  * stop exclusive in this list. If stop == start, the returned list is empty
  */
-struct linked_int_list *linked_int_list_get_sub_list(struct linked_int_list *list, int start, int stop) {
-    struct linked_int_list *result = linked_int_list_create();
+struct linked_int_list linked_int_list_get_sub_list(struct linked_int_list *list, int start, int stop) {
+    struct linked_int_list result = linked_int_list_create();
     struct node *tmp = linked_int_list_get_node_at_pos(list, start);
     for (int i = start; i < stop; ++i) {
-        linked_int_list_add(result, tmp->value);
+        linked_int_list_add(&result, tmp->value);
         tmp = tmp->next;
     }
 
@@ -244,97 +258,96 @@ int main() {
     // some basic test for this linked_int_list
 
     // test 1: create new list
-    struct linked_int_list *list = linked_int_list_create();
+    struct linked_int_list list = linked_int_list_create();
     printf("test 1: create new list\n");
-    print_list(list); // expected: [ ]
+    print_list(&list); // expected: [ ]
 
     // test 2: linked_int_list_add
-    linked_int_list_add(list, 0);
-    linked_int_list_add(list, 1);
-    linked_int_list_add(list, 2);
-    linked_int_list_add(list, 3);
-    linked_int_list_add(list, 4);
-    linked_int_list_add(list, 5);
-    linked_int_list_add(list, 7);
-    linked_int_list_add(list, 8);
-    linked_int_list_add(list, 9);
+    for (int i = 0; i < 6; ++i) {
+        linked_int_list_add(&list, i);
+    }
+
+    for (int i = 7; i < 10; ++i) {
+        linked_int_list_add(&list, i);
+    }
+
     printf("test 2: add\n");
-    print_list(list); // expected: [ 0 1 2 3 4 5 7 8 9 ]
+    print_list(&list); // expected: [ 0 1 2 3 4 5 7 8 9 ]
 
     // test 3: linked_int_list_insert
-    linked_int_list_insert(list, 6, 6);
+    linked_int_list_insert(&list, 6, 6);
     printf("test 3: insert\n");
-    print_list(list); // expected: [ 0 1 2 3 4 5 6 7 8 9 ]
+    print_list(&list); // expected: [ 0 1 2 3 4 5 6 7 8 9 ]
 
     // test 4: linked_int_list_set
-    linked_int_list_set(list, 0, 10);
+    linked_int_list_set(&list, 0, 10);
     printf("test 4: set\n");
-    print_list(list); // expected: [ 10 1 2 3 4 5 6 7 8 9 ]
+    print_list(&list); // expected: [ 10 1 2 3 4 5 6 7 8 9 ]
 
     // test 5: linked_int_list_get
-    int actual = linked_int_list_get(list, 6);
+    int actual = linked_int_list_get(&list, 6);
     printf("test 5: get\n");
     printf("expected: 6, ");
     printf("actual: %d\n", actual);
 
     // test 6: remove at pos
-    actual = linked_int_list_remove_by_pos(list, 5);
+    actual = linked_int_list_remove_by_pos(&list, 5);
     printf("test 6: remove at pos\n");
     printf("expected: 5, ");
     printf("actual: %d, list: ", actual);
-    print_list(list); // expected: [ 10 1 2 3 4 6 7 8 9 ]
+    print_list(&list); // expected: [ 10 1 2 3 4 6 7 8 9 ]
 
     // test 7: remove by value
-    bool actual_bool = linked_int_list_remove_by_value(list, 8);
+    bool actual_bool = linked_int_list_remove_by_value(&list, 8);
     printf("test 7: remove by value\n");
     printf("expected: 1, ");
     printf("actual: %d, list: ", actual_bool);
-    print_list(list); // expected: [ 10 1 2 3 4 6 7 9 ]
+    print_list(&list); // expected: [ 10 1 2 3 4 6 7 9 ]
 
     // test 8: index_pos
-    actual = linked_int_list_index_pos(list, 4, 10);
+    actual = linked_int_list_index_pos(&list, 4, 10);
     printf("test 8: index from position\n");
     printf("expected: -1, ");
     printf("actual: %d\n", actual);
 
     // test 9: index_of
-    actual = linked_int_list_index_of(list, 10);
+    actual = linked_int_list_index_of(&list, 10);
     printf("test 9: index of\n");
     printf("expected: 0, ");
     printf("actual: %d\n", actual);
 
     // test 10: get sub list
-    struct linked_int_list *sub_list = linked_int_list_get_sub_list(list, 1, 4);
+    struct linked_int_list sub_list = linked_int_list_get_sub_list(&list, 1, 4);
     printf("test 10: get sub list\n");
     printf("expected: [ 1 2 3 ], ");
     printf("actual: ");
-    print_list(sub_list);
+    print_list(&sub_list);
 
     // test 11: remove range
-    linked_int_list_remove_range(list, 4, 8);
+    linked_int_list_remove_range(&list, 4, 8);
     printf("test 11: remove range\n");
     printf("expected: [ 10 1 2 3 ], ");
     printf("actual: ");
-    print_list(list);
+    print_list(&list);
 
     // test 12: make empty
-    linked_int_list_make_empty(list);
+    linked_int_list_make_empty(&list);
     printf("test 12: make empty\n");
     printf("expected: 0, [ ]; ");
-    printf("actual: %d, ", list->size);
-    print_list(list);
+    printf("actual: %d, ", list.size);
+    print_list(&list);
     printf("\n");
 
     // stress test: create and destroy linked list 100,000 times to ensure that there are no memory leaks
     // after a list is destroyed, the memory used by the nodes should be freed
-    struct linked_int_list *l = linked_int_list_create();
+    struct linked_int_list l = linked_int_list_create();
     printf("Stress Test\n");
     for (int i = 0; i < 100000; ++i) {
         // printf("%d\n", i);
         for (int j = 0; j < 10000; ++j) {
-            linked_int_list_add(l, i);
+            linked_int_list_add(&l, i);
         }
-        linked_int_list_make_empty(l);
+        linked_int_list_make_empty(&l);
     }
 
     return EXIT_SUCCESS;

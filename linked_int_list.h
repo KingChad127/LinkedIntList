@@ -13,8 +13,8 @@ struct linked_int_list {
     struct node *header;
     int size;
 };
-
-struct linked_int_list *linked_int_list_create();
+/* create a new linked list on the stack */
+struct linked_int_list linked_int_list_create();
 
 void linked_int_list_add(struct linked_int_list *list, int value);
 
@@ -36,7 +36,7 @@ int linked_int_list_index_pos(struct linked_int_list *list, int pos, int value);
 
 int linked_int_list_index_of(struct linked_int_list *list, int value);
 
-struct linked_int_list *linked_int_list_get_sub_list(struct linked_int_list *list, int start, int stop);
+struct linked_int_list linked_int_list_get_sub_list(struct linked_int_list *list, int start, int stop);
 
 void linked_int_list_remove_range(struct linked_int_list *list, int start, int stop);
 
