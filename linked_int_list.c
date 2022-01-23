@@ -2,65 +2,24 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "node.h"
+#include "linked_int_list.h"
+
 // Note: C is pass by value. If I pass the actual struct into the below methods, the C compiler
 // will make a copy of that struct and proceed to modify it. I want to modify the original, thus,
 // I pass the pointer to that object so that the C compiler copies the pointer and not the struct.
-
-
-/**
- * list node struct
- */
-struct node {
-    struct node *prev;
-    struct node *next;
-    int value;
-};
-
-/**
- * Set the next node
- * @param curr pointer to the node to modify
- * @param next pointer to the node to linked_int_list_set as next
- */
-void node_set_next(struct node *curr, struct node *next) {
-    curr->next = next;
-}
-
-/**
- * Set the previous node
- * @param curr pointer to the node to modify
- * @param prev pointer to the node to linked_int_list_set as prev
- */
-void node_set_prev(struct node *curr, struct node *prev) {
-    curr->prev = prev;
-}
-
-/**
- * linked_int_list struct
- */
-struct linked_int_list {
-    struct node *header; // pointer to header node
-    int size; // size of the list excluding the header node
-};
-
-/**
- * The size of a single node = the size of the pointer to the
- */
-static int node_size = 2 * sizeof(struct node *) + sizeof(int);
 
 /**
  * Create a new empty linked_int_list on the heap
  * @return a pointer to this newly created empty linked_int_list
  */
-struct linked_int_list *create_new_list() {
-    // create header dynamically
-    struct node *header = (struct node *) malloc(node_size);
+struct linked_int_list *linked_int_list_create() {
+    struct node *header = node_create(NULL, NULL);
     header->prev = header;
     header->next = header;
-    // create list dynamically
-    struct linked_int_list *result = (struct linked_int_list *) malloc(sizeof(int) + sizeof(struct node *));
+    struct linked_int_list *result = (struct linked_int_list *) malloc(sizeof(struct node *) + sizeof(int));
     result->header = header;
     result->size = 0;
-    // return the memory address of this new empty list
     return result;
 }
 
@@ -228,7 +187,7 @@ int linked_int_list_index_of(struct linked_int_list *list, int value) {
  * stop exclusive in this list. If stop == start, the returned list is empty
  */
 struct linked_int_list *linked_int_list_get_sub_list(struct linked_int_list *list, int start, int stop) {
-    struct linked_int_list *result = create_new_list();
+    struct linked_int_list *result = linked_int_list_create();
     struct node *tmp = linked_int_list_get_node_at_pos(list, start);
     for (int i = start; i < stop; ++i) {
         linked_int_list_add(result, tmp->value);
@@ -285,7 +244,7 @@ int main() {
     // some basic test for this linked_int_list
 
     // test 1: create new list
-    struct linked_int_list *list = create_new_list();
+    struct linked_int_list *list = linked_int_list_create();
     printf("test 1: create new list\n");
     print_list(list); // expected: [ ]
 
@@ -368,9 +327,10 @@ int main() {
 
     // stress test: create and destroy linked list 100,000 times to ensure that there are no memory leaks
     // after a list is destroyed, the memory used by the nodes should be freed
+    struct linked_int_list *l = linked_int_list_create();
     printf("Stress Test\n");
-    struct linked_int_list *l = create_new_list();
     for (int i = 0; i < 100000; ++i) {
+        // printf("%d\n", i);
         for (int j = 0; j < 10000; ++j) {
             linked_int_list_add(l, i);
         }
