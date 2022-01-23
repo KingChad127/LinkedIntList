@@ -1,7 +1,3 @@
-//
-// Created by Abhinav  Chadaga on 1/23/22.
-//
-
 #ifndef LINKEDINTLIST_LINKED_INT_LIST_H
 #define LINKEDINTLIST_LINKED_INT_LIST_H
 
@@ -13,7 +9,7 @@ struct linked_int_list {
     struct node *header;
     int size;
 };
-/* create a new linked list on the stack */
+
 struct linked_int_list linked_int_list_create();
 
 void linked_int_list_add(struct linked_int_list *list, int value);

@@ -5,24 +5,6 @@
 #include "node.h"
 #include "linked_int_list.h"
 
-// Note: C is pass by value. If I pass the actual struct into the below methods, the C compiler
-// will make a copy of that struct and proceed to modify it. I want to modify the original, thus,
-// I pass the pointer to that object so that the C compiler copies the pointer and not the struct.
-
-///**
-// * Create a new empty linked_int_list on the heap
-// * @return a pointer to this newly created empty linked_int_list
-// */
-//struct linked_int_list *linked_int_list_create() {
-//    struct node *header = node_create(NULL, NULL);
-//    header->prev = header;
-//    header->next = header;
-//    struct linked_int_list *result = (struct linked_int_list *) malloc(sizeof(struct node *) + sizeof(int));
-//    result->header = header;
-//    result->size = 0;
-//    return result;
-//}
-
 /**
  * Create a new empty linked_int_list on the stack
  * @return this newly created empty linked_int_list
@@ -40,12 +22,12 @@ struct linked_int_list linked_int_list_create() {
 /**
  * Add an element to the list
  * @param list pointer to the list to linked_int_list_add to
- * @param value the value to linked_int_list_add
+ * @param value the data to linked_int_list_add
  */
 void linked_int_list_add(struct linked_int_list *list, int value) {
     list->size++;
     struct node *n = (struct node *) malloc(node_size);
-    n->value = value;
+    n->data = value;
     n->prev = list->header->prev;
     n->next = list->header;
     list->header->prev->next = n;
@@ -68,7 +50,7 @@ struct node *linked_int_list_get_node_at_pos(struct linked_int_list *list, int p
 }
 
 /**
- * Insert a new value at a specific index
+ * Insert a new data at a specific index
  * @param list list to linked_int_list_insert into
  * @param value to linked_int_list_insert
  * @param pos position to linked_int_list_insert at
@@ -80,45 +62,45 @@ void linked_int_list_insert(struct linked_int_list *list, int pos, int value) {
     struct node *insert_node = (struct node *) malloc(node_size);
     node_set_prev(insert_node, prev);
     node_set_next(insert_node, next);
-    insert_node->value = value;
+    insert_node->data = value;
     node_set_next(prev, insert_node);
     node_set_prev(next, insert_node);
 }
 
 /**
- * Change the value at a certain position without changing the size of the list
+ * Change the data at a certain position without changing the size of the list
  * @param list list to modify
  * @param pos of the node to modify
- * @param value new value to replace the old value with
- * @return the value that was replaced
+ * @param value new data to replace the old data with
+ * @return the data that was replaced
  */
 int linked_int_list_set(struct linked_int_list *list, int pos, int value) {
     struct node *node_to_change = linked_int_list_get_node_at_pos(list, pos);
-    int old_value = node_to_change->value;
-    node_to_change->value = value;
+    int old_value = node_to_change->data;
+    node_to_change->data = value;
     return old_value;
 }
 
 /**
- * Return the value at the given index
+ * Return the data at the given index
  * @param list list to look through
- * @param pos return the value at this index
- * @return the value at pos index
+ * @param pos return the data at this index
+ * @return the data at pos index
  */
 int linked_int_list_get(struct linked_int_list *list, int pos) {
     struct node *n = linked_int_list_get_node_at_pos(list, pos);
-    return n->value;
+    return n->data;
 }
 
 /**
  * Remove the node passed in from the list
  * @param list to remove from
  * @param node_to_remove tgt
- * @return the value contained in the node removed
+ * @return the data contained in the node removed
  */
 int linked_int_list_remove_node(struct linked_int_list *list, struct node *node_to_remove) {
     list->size--;
-    int ret_val = node_to_remove->value;
+    int ret_val = node_to_remove->data;
     struct node *prev = node_to_remove->prev;
     struct node *next = node_to_remove->next;
     node_set_next(prev, next);
@@ -131,7 +113,7 @@ int linked_int_list_remove_node(struct linked_int_list *list, struct node *node_
  * Remove an element from the list based on position
  * @param list to remove from
  * @param pos position to remove from
- * @return the value removed
+ * @return the data removed
  */
 int linked_int_list_remove_by_pos(struct linked_int_list *list, int pos) {
     struct node *node_to_remove = linked_int_list_get_node_at_pos(list, pos);
@@ -140,7 +122,7 @@ int linked_int_list_remove_by_pos(struct linked_int_list *list, int pos) {
 }
 
 /**
- * Remove the leftmost occurrence of value from the list
+ * Remove the leftmost occurrence of data from the list
  * @param list to remove from
  * @param value to remove
  * @return true if the list was changed as a result of this function
@@ -149,7 +131,7 @@ bool linked_int_list_remove_by_value(struct linked_int_list *list, int value) {
     bool removed = false;
     struct node *tmp = list->header->next;
     while (tmp != list->header && !removed) {
-        if (tmp->value == value) {
+        if (tmp->data == value) {
             removed = true;
             linked_int_list_remove_node(list, tmp);
         } else {
@@ -160,18 +142,18 @@ bool linked_int_list_remove_by_value(struct linked_int_list *list, int value) {
 }
 
 /**
- * Return the index of the left most occurrence of a value from the list after a certain position
+ * Return the index of the left most occurrence of a data from the list after a certain position
  * @param list to look through
  * @param pos position to start looking from
  * @param value to find
- * @return the index of the value that was found, or -1 if value is not in the list
+ * @return the index of the data that was found, or -1 if data is not in the list
  */
 int linked_int_list_index_pos(struct linked_int_list *list, int pos, int value) {
     int not_found = -1;
     int index = pos;
     struct node *tmp = linked_int_list_get_node_at_pos(list, pos);
     while (tmp != list->header) {
-        if (tmp->value == value) {
+        if (tmp->data == value) {
             return index;
         }
         tmp = tmp->next;
@@ -182,10 +164,10 @@ int linked_int_list_index_pos(struct linked_int_list *list, int pos, int value) 
 }
 
 /**
- * Look for a value and find its index
+ * Look for a data and find its index
  * @param value to look for
  * @param list to remove from
- * @return the index of the value if found, else return -1
+ * @return the index of the data if found, else return -1
  */
 int linked_int_list_index_of(struct linked_int_list *list, int value) {
     return linked_int_list_index_pos(list, 0, value);
@@ -204,7 +186,7 @@ struct linked_int_list linked_int_list_get_sub_list(struct linked_int_list *list
     struct linked_int_list result = linked_int_list_create();
     struct node *tmp = linked_int_list_get_node_at_pos(list, start);
     for (int i = start; i < stop; ++i) {
-        linked_int_list_add(&result, tmp->value);
+        linked_int_list_add(&result, tmp->data);
         tmp = tmp->next;
     }
 
@@ -246,7 +228,7 @@ void print_list(struct linked_int_list *list) {
     int len = list->size;
     struct node *tmp = list->header->next;
     while (tmp != NULL && i < len) {
-        int value = tmp->value;
+        int value = tmp->data;
         printf("%d ", value);
         i++;
         tmp = tmp->next;
@@ -297,9 +279,9 @@ int main() {
     printf("actual: %d, list: ", actual);
     print_list(&list); // expected: [ 10 1 2 3 4 6 7 8 9 ]
 
-    // test 7: remove by value
+    // test 7: remove by data
     bool actual_bool = linked_int_list_remove_by_value(&list, 8);
-    printf("test 7: remove by value\n");
+    printf("test 7: remove by data\n");
     printf("expected: 1, ");
     printf("actual: %d, list: ", actual_bool);
     print_list(&list); // expected: [ 10 1 2 3 4 6 7 9 ]

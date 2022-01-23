@@ -4,10 +4,10 @@
 struct node {
     struct node *prev;
     struct node *next;
-    int value;
+    int data;
 };
 
-static size_t node_size = 2 * sizeof(struct node *) + sizeof(int);
+static size_t node_size = 2 * sizeof(struct node *) + sizeof(void*);
 
 struct node *node_create(struct node *prev, struct node *next);
 
