@@ -14,8 +14,8 @@ struct linked_int_list linked_int_list_create() {
     header->prev = header;
     header->next = header;
     return (struct linked_int_list) {
-        .header = header,
-        .size = 0,
+            .header = header,
+            .size = 0,
     };
 }
 
@@ -240,7 +240,7 @@ int main() {
     // some basic test for this linked_int_list
 
     // test 1: create new list
-    struct linked_int_list list = linked_int_list_create();
+    linked_int_list_t list = linked_int_list_create();
     printf("test 1: create new list\n");
     print_list(&list); // expected: [ ]
 
@@ -299,7 +299,7 @@ int main() {
     printf("actual: %d\n", actual);
 
     // test 10: get sub list
-    struct linked_int_list sub_list = linked_int_list_get_sub_list(&list, 1, 4);
+    linked_int_list_t sub_list = linked_int_list_get_sub_list(&list, 1, 4);
     printf("test 10: get sub list\n");
     printf("expected: [ 1 2 3 ], ");
     printf("actual: ");
@@ -322,7 +322,7 @@ int main() {
 
     // stress test: create and destroy linked list 100,000 times to ensure that there are no memory leaks
     // after a list is destroyed, the memory used by the nodes should be freed
-    struct linked_int_list l = linked_int_list_create();
+    linked_int_list_t l = linked_int_list_create();
     printf("Stress Test\n");
     for (int i = 0; i < 100000; ++i) {
         // printf("%d\n", i);

@@ -1,13 +1,13 @@
 #ifndef LINKEDINTLIST_NODE_H
 #define LINKEDINTLIST_NODE_H
 
-struct node {
+typedef struct node {
     struct node *prev;
     struct node *next;
     int data;
-};
+} node_t;
 
-static size_t node_size = 2 * sizeof(struct node *) + sizeof(void*);
+static size_t node_size = 2 * sizeof(struct node *) + sizeof(int);
 
 struct node *node_create(struct node *prev, struct node *next);
 

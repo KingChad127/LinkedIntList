@@ -5,10 +5,10 @@
 #include "node.h"
 
 
-struct linked_int_list {
-    struct node *header;
+typedef struct linked_int_list {
+    node_t *header;
     int size;
-};
+} linked_int_list_t;
 
 struct linked_int_list linked_int_list_create();
 
